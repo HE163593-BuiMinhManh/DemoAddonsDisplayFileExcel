@@ -84,7 +84,7 @@ namespace DemoAddonsDisplayFileExcel
         {
             // kiem tra file
             
-            BubbleEvent = false;
+            BubbleEvent = true;
             string filePath = EditText0.Value;
 
             if (string.IsNullOrEmpty(filePath) || !File.Exists(filePath))
@@ -152,9 +152,11 @@ namespace DemoAddonsDisplayFileExcel
                 //Application.SBO_Application.MessageBox("Lỗi khi đọc file Excel: " + ex.Message);
 
                 oApp.MessageBox("Lỗi khi đọc file Excel: " + ex.Message);
+                BubbleEvent = false;
+
             }
 
-            BubbleEvent = true;
+            //BubbleEvent = true;
 
         }
 
