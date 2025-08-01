@@ -69,35 +69,6 @@ namespace DemoAddonsDisplayFileExcel
         private SAPbouiCOM.Button Button1;
         private SAPbouiCOM.Grid Grid0;
 
-        //private void Button0_ClickBefore(object sboObject, SAPbouiCOM.SBOItemEventArg pVal, out bool BubbleEvent)
-        //{
-        //    BubbleEvent = true;
-        //    throw new System.NotImplementedException();
-
-
-        //}
-
-        //private void Button1_ClickBefore(object sboObject, SAPbouiCOM.SBOItemEventArg pVal, out bool BubbleEvent)
-        //{
-        //    BubbleEvent = true;
-        //    throw new System.NotImplementedException();
-
-        //}
-
-        //private void Button0_ClickBefore(object sboObject, SAPbouiCOM.SBOItemEventArg pVal, out bool BubbleEvent)
-        //{
-        //    BubbleEvent = false;
-
-        //    OpenFileDialog openFileDialog = new OpenFileDialog();
-        //    openFileDialog.Filter = "Excel Files|*.xls;*.xlsx";
-
-        //    if (openFileDialog.ShowDialog() == DialogResult.OK)
-        //    {
-        //        EditText0.Value = openFileDialog.FileName;
-        //    }
-
-        //    BubbleEvent = true;
-        //}
 
         private void Button0_ClickBefore(object sboObject, SAPbouiCOM.SBOItemEventArg pVal, out bool BubbleEvent)
         {
@@ -112,8 +83,8 @@ namespace DemoAddonsDisplayFileExcel
         private void Button1_ClickBefore(object sboObject, SAPbouiCOM.SBOItemEventArg pVal, out bool BubbleEvent)
         {
             // kiem tra file
+            
             BubbleEvent = false;
-
             string filePath = EditText0.Value;
 
             if (string.IsNullOrEmpty(filePath) || !File.Exists(filePath))
@@ -132,21 +103,26 @@ namespace DemoAddonsDisplayFileExcel
                 // dky bo ma hoa de doc file excel
                 System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
 
+
+                // doc file
                 using (var stream = File.Open(filePath, FileMode.Open, FileAccess.Read))
                 {
                     using (var reader = ExcelReaderFactory.CreateReader(stream))//
                     {
                         var result = reader.AsDataSet();
                         DataTable dt = result.Tables[0]; // lấy sheet đầu tiên
-
+                        Grid0.DataTable = null;
                         // Tạo DataTable SAP để đổ dữ liệu vào Grid
-                        SAPbouiCOM.DataTable sapDT = this.UIAPIRawForm.DataSources.DataTables.Item(0);//
+                        SAPbouiCOM.DataTable sapDT = this.UIAPIRawForm.DataSources.DataTables.Item("DT_0");//
 
-                        // Xóa cột và dòng cũ
+
+                        // Xóa toàn bộ dòng
+                        while (sapDT.Rows.Count > 0)
+                            sapDT.Rows.Remove(0);
+
+                        // Xóa toàn bộ cột
                         while (sapDT.Columns.Count > 0)
                             sapDT.Columns.Remove(sapDT.Columns.Item(0).Name);
-
-                        sapDT.Rows.Clear();
 
                         // Thêm cột
                         for (int col = 0; col < dt.Columns.Count; col++)
@@ -179,6 +155,7 @@ namespace DemoAddonsDisplayFileExcel
             }
 
             BubbleEvent = true;
+
         }
 
 

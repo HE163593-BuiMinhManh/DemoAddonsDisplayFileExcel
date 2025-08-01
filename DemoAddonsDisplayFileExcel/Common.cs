@@ -45,7 +45,12 @@ namespace DemoAddonsDisplayFileExcel
         public static string openFileDialog(string title, string filter)
         {
             string filename = "";
-            NativeWindow nativewindow = new NativeWindow(); Thread t = new Thread(() =>
+
+            // chua thay su khac biet cua nativewindow
+            NativeWindow nativewindow = new NativeWindow();
+
+            //chua hieu lam
+            Thread t = new Thread(() =>
             {
                 nativewindow.AssignHandle(System.Diagnostics.Process.GetProcessesByName("SAP Business One")[0].MainWindowHandle);
                 OpenFileDialog openFileDialog = new OpenFileDialog(); openFileDialog.Title = title;
