@@ -49,13 +49,13 @@ namespace DemoAddonsDisplayFileExcel
             // chua thay su khac biet cua nativewindow
             NativeWindow nativewindow = new NativeWindow();
 
-            //chua hieu lam
+            //chua hieu lam nativewindow
             Thread t = new Thread(() =>
             {
                 nativewindow.AssignHandle(System.Diagnostics.Process.GetProcessesByName("SAP Business One")[0].MainWindowHandle);
                 OpenFileDialog openFileDialog = new OpenFileDialog(); openFileDialog.Title = title;
                 openFileDialog.Filter = filter;
-                DialogResult dr = openFileDialog.ShowDialog(nativewindow);
+                DialogResult dr = openFileDialog.ShowDialog();
                 if (dr == DialogResult.OK)
                 {
                     filename = openFileDialog.FileName;

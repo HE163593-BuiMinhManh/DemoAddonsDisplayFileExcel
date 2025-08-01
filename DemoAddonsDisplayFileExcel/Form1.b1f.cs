@@ -41,6 +41,8 @@ namespace DemoAddonsDisplayFileExcel
         /// <summary>
         /// Initialize form event. Called by framework before form creation.
         /// </summary>
+        /// 
+        // day la override cho class UserFormBase
         public override void OnInitializeFormEvents()
         {
         }
@@ -58,7 +60,10 @@ namespace DemoAddonsDisplayFileExcel
 
         private void OnCustomInitialize()
         {
+            //Lấy đối tượng ứng dụng SAP B1 hiện tại (UI API).
             oApp = SAPbouiCOM.Framework.Application.SBO_Application;
+
+
             this.oCompany = GetCurrentDICompany();
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
 
@@ -124,26 +129,77 @@ namespace DemoAddonsDisplayFileExcel
                         while (sapDT.Columns.Count > 0)
                             sapDT.Columns.Remove(sapDT.Columns.Item(0).Name);
 
-                        // Thêm cột
+                        // sua header
+
+                        // Lấy header từ dòng đầu tiên
+                        List<string> columnNames = new List<string>();
+                        HashSet<string> usedNames = new HashSet<string>();
+
                         for (int col = 0; col < dt.Columns.Count; col++)
                         {
-                            sapDT.Columns.Add($"Col{col}", SAPbouiCOM.BoFieldsType.ft_Text);
+                            string baseName = dt.Rows[0][col]?.ToString().Trim();
+                            if (string.IsNullOrEmpty(baseName))
+                                baseName = $"Column{col}";
+
+                            // Đảm bảo tên không trùng
+                            string uniqueName = baseName;
+                            int count = 1;
+                            while (usedNames.Contains(uniqueName))
+                            {
+                                uniqueName = baseName + "_" + count++;
+                            }
+
+                            usedNames.Add(uniqueName);
+                            columnNames.Add(uniqueName);
+
+                            sapDT.Columns.Add(uniqueName, SAPbouiCOM.BoFieldsType.ft_Text);
                         }
 
-                        // Thêm dữ liệu từng dòng
-                        for (int row = 0; row < dt.Rows.Count; row++)
+                        // Gán dữ liệu từ dòng thứ 2 trở đi
+                        for (int row = 1; row < dt.Rows.Count; row++)
                         {
                             sapDT.Rows.Add();
                             for (int col = 0; col < dt.Columns.Count; col++)
                             {
                                 string value = dt.Rows[row][col]?.ToString() ?? "";
-                                sapDT.SetValue($"Col{col}", row, value);
+                                sapDT.SetValue(columnNames[col], row - 1, value);
                             }
                         }
 
-                        // Gán dữ liệu vào Grid
+                        // Gán DataTable vào Grid
                         Grid0.DataTable = sapDT;
+
+                        // Gán caption cột Grid
+                        for (int col = 0; col < columnNames.Count; col++)
+                        {
+                            Grid0.Columns.Item(col).TitleObject.Caption = columnNames[col];
+                        }
+
                         Grid0.AutoResizeColumns();
+
+
+
+                        //// Thêm cột
+                        //for (int col = 0; col < dt.Columns.Count; col++)
+                        //{
+                        //    sapDT.Columns.Add($"Col{col}", SAPbouiCOM.BoFieldsType.ft_Text);
+                        //}
+
+                        //// Thêm dữ liệu từng dòng
+
+                        //for (int row = 0; row < dt.Rows.Count; row++)
+                        //{
+                        //    sapDT.Rows.Add();
+                        //    for (int col = 0; col < dt.Columns.Count; col++)
+                        //    {
+                        //        string value = dt.Rows[row][col]?.ToString() ?? "";
+                        //        sapDT.SetValue($"Col{col}", row, value);
+                        //    }
+                        //}
+
+                        // Gán dữ liệu vào Grid
+                        //Grid0.DataTable = sapDT;
+                        //Grid0.AutoResizeColumns();
                     }
                 }
             }
